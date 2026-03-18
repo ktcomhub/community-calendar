@@ -12,13 +12,14 @@
             background-color: #fcfcfc;
             color: #333;
         }
-        /* 賽馬會「聚首壹塘」配色 */
-        .color-primary { color: #2d4a53; } /* 深青色 */
+        /* 配色方案 - 參考 Logo */
+        .color-primary { color: #2d4a53; }
         .bg-primary { background-color: #2d4a53; }
-        .bg-accent-orange { background-color: #f19149; }
-        .bg-accent-yellow { background-color: #f9d548; }
-        .bg-accent-pink { background-color: #e98b8b; }
-        .bg-accent-teal { background-color: #79c3ba; }
+        
+        /* 活動類別顏色 */
+        .bg-at-center { background-color: #2d4a53; color: white; } /* 客廳舉行 - 深青色 */
+        .bg-outside { background-color: #f19149; color: white; }   /* 外出活動 - 橙色 */
+        .bg-family { background-color: #e98b8b; color: white; }    /* 親子/祖孫 - 粉色 */
 
         .calendar-grid { 
             display: grid; 
@@ -37,38 +38,54 @@
             transition: background 0.2s;
         }
         .day-cell:hover { background: #f0f7f9; }
-        .day-cell.today { background: #fffbeb; border: 2px solid #f9d548; }
         
-        /* 針對手機顯示，增加格子高度方便長者點擊 */
         @media (max-width: 640px) {
-            .day-cell { min-height: 90px; padding: 4px; }
-            .event-label { font-size: 10px; line-height: 1.2; }
+            .day-cell { min-height: 95px; padding: 4px; }
+            .event-label { font-size: 10px; line-height: 1.2; padding: 4px 2px; }
         }
 
         .event-label {
             margin-top: 4px;
-            padding: 4px 6px;
+            padding: 5px 6px;
             border-radius: 6px;
-            font-weight: 500;
-            font-size: 12px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            font-weight: 600;
+            font-size: 11px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* 報名按鈕動畫 */
+        .btn-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body class="pb-20">
 
-    <!-- Header 頂部欄 -->
+    <!-- Header 頂部 -->
     <div class="bg-primary text-white p-6 shadow-lg mb-4 text-center">
         <div class="max-w-4xl mx-auto">
             <h1 class="text-2xl md:text-3xl font-bold tracking-tight">賽馬會「聚首壹塘」社區客廳</h1>
-            <div class="mt-2 inline-block px-4 py-1 bg-white/20 rounded-full text-sm">3月及4月活動總表</div>
+            <div class="mt-2 inline-block px-4 py-1 bg-white/20 rounded-full text-sm">3月及4月活動報名門戶</div>
         </div>
     </div>
 
     <!-- 月份切換 -->
-    <div class="max-w-4xl mx-auto px-4 mb-6 flex justify-between items-center">
-        <button onclick="changeMonth(2)" id="btnMar" class="flex-1 py-3 text-lg font-bold rounded-l-2xl border-2 border-primary transition-all">3月</button>
-        <button onclick="changeMonth(3)" id="btnApr" class="flex-1 py-3 text-lg font-bold rounded-r-2xl border-2 border-l-0 border-primary transition-all">4月</button>
+    <div class="max-w-4xl mx-auto px-4 mb-4 flex justify-between items-center gap-2">
+        <button onclick="changeMonth(2)" id="btnMar" class="flex-1 py-4 text-xl font-bold rounded-2xl border-2 border-primary transition-all">3月</button>
+        <button onclick="changeMonth(3)" id="btnApr" class="flex-1 py-4 text-xl font-bold rounded-2xl border-2 border-primary transition-all">4月</button>
+    </div>
+
+    <!-- 圖例說明 -->
+    <div class="max-w-4xl mx-auto px-4 mb-6 flex flex-wrap justify-center gap-4 text-sm font-bold">
+        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-at-center"></span> 客廳舉行</div>
+        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-outside"></span> 外出活動</div>
+        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-family"></span> 親子/祖孫</div>
     </div>
 
     <!-- 星期顯示 -->
@@ -82,71 +99,60 @@
             <div class="bg-slate-100 py-3 text-center font-bold">五</div>
             <div class="bg-slate-100 py-3 text-center text-blue-500 font-bold">六</div>
         </div>
-
-        <!-- 月曆格內容 -->
-        <div id="calendarDays" class="calendar-grid rounded-b-2xl overflow-hidden shadow-xl border-t-0">
-            <!-- 由 JS 生成 -->
-        </div>
+        <div id="calendarDays" class="calendar-grid rounded-b-2xl overflow-hidden shadow-xl border-t-0"></div>
     </div>
 
-    <!-- 底部說明 -->
-    <div class="max-w-4xl mx-auto mt-8 px-6 text-slate-500 text-sm italic text-center">
-        * 點擊任何有活動的日期，即可查看詳情及報名 *
-    </div>
-
-    <!-- 活動詳情視窗 (針對手機優化) -->
-    <div id="eventModal" class="fixed inset-0 bg-black/70 hidden items-end md:items-center justify-center z-50 p-0 md:p-4 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-lg rounded-t-3xl md:rounded-3xl overflow-hidden animate-slide-up shadow-2xl">
-            <!-- 頂部顏色條 -->
-            <div id="modalHeaderColor" class="h-4 w-full"></div>
+    <!-- 活動詳情彈窗 -->
+    <div id="eventModal" class="fixed inset-0 bg-black/75 hidden items-end md:items-center justify-center z-50 p-0 md:p-4 backdrop-blur-md">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl md:rounded-3xl overflow-hidden shadow-2xl">
+            <div id="modalHeaderColor" class="h-6 w-full"></div>
             
             <div class="p-8">
                 <div class="flex justify-between items-start mb-6">
                     <div>
-                        <span id="modalCategory" class="text-xs font-bold uppercase tracking-widest px-2 py-1 rounded bg-slate-100 text-slate-500">活動類別</span>
-                        <h2 id="modalTitle" class="text-2xl font-bold mt-2 color-primary">活動名稱</h2>
+                        <span id="modalCategoryLabel" class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase">活動類別</span>
+                        <h2 id="modalTitle" class="text-2xl font-bold mt-2 color-primary leading-tight"></h2>
                     </div>
-                    <button onclick="closeModal()" class="bg-slate-100 w-10 h-10 rounded-full flex items-center justify-center text-2xl text-slate-400 hover:text-slate-600">&times;</button>
+                    <button onclick="closeModal()" class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center text-3xl text-slate-400">&times;</button>
                 </div>
 
-                <div class="space-y-6 text-lg">
+                <div class="space-y-5 text-lg">
                     <div class="flex items-center gap-4">
-                        <span class="w-10 h-10 flex items-center justify-center bg-orange-50 rounded-full text-xl">📅</span>
+                        <span class="w-12 h-12 flex items-center justify-center bg-orange-50 rounded-2xl text-2xl">📅</span>
                         <div>
-                            <p class="text-xs text-slate-400 font-bold">日期</p>
+                            <p class="text-xs text-slate-400 font-bold uppercase">活動日期</p>
                             <p id="modalDate" class="font-bold text-slate-700"></p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="w-10 h-10 flex items-center justify-center bg-blue-50 rounded-full text-xl">⏰</span>
+                        <span class="w-12 h-12 flex items-center justify-center bg-blue-50 rounded-2xl text-2xl">⏰</span>
                         <div>
-                            <p class="text-xs text-slate-400 font-bold">時間</p>
+                            <p class="text-xs text-slate-400 font-bold uppercase">活動時間</p>
                             <p id="modalTime" class="font-bold text-slate-700"></p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <span class="w-10 h-10 flex items-center justify-center bg-teal-50 rounded-full text-xl">📍</span>
+                        <span class="w-12 h-12 flex items-center justify-center bg-teal-50 rounded-2xl text-2xl">📍</span>
                         <div>
-                            <p class="text-xs text-slate-400 font-bold">地點</p>
+                            <p class="text-xs text-slate-400 font-bold uppercase">舉行地點</p>
                             <p id="modalLoc" class="font-bold text-slate-700"></p>
                         </div>
                     </div>
                     <div class="flex items-start gap-4">
-                        <span class="w-10 h-10 flex items-center justify-center bg-purple-50 rounded-full text-xl">👥</span>
+                        <span class="w-12 h-12 flex items-center justify-center bg-purple-50 rounded-2xl text-2xl">👤</span>
                         <div>
-                            <p class="text-xs text-slate-400 font-bold">對象</p>
+                            <p class="text-xs text-slate-400 font-bold uppercase">招募對象</p>
                             <p id="modalTarget" class="font-bold text-slate-700"></p>
                         </div>
                     </div>
-                    <div id="descArea" class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                        <p id="modalDesc" class="text-slate-600 leading-relaxed"></p>
+                    <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                        <p id="modalDesc" class="text-slate-600 text-base leading-relaxed"></p>
                     </div>
                 </div>
 
-                <!-- 特大報名按鈕 -->
-                <div class="mt-10 mb-2">
-                    <a id="modalLink" href="#" target="_blank" class="block w-full py-5 bg-accent-orange hover:bg-orange-600 text-white text-center text-xl font-bold rounded-2xl shadow-lg transition-transform active:scale-95">
-                        👉 我要報名 / 查詢 👈
+                <div class="mt-8 mb-4">
+                    <a id="modalLink" href="https://forms.gle/3XQCVsQdPNvvZDW79" target="_blank" class="btn-pulse block w-full py-6 bg-accent-orange text-white text-center text-2xl font-black rounded-2xl shadow-xl transition-all active:scale-95" style="background-color: #f19149;">
+                        立即報名
                     </a>
                 </div>
             </div>
@@ -154,30 +160,29 @@
     </div>
 
     <script>
-        // 統一報名連結
-        const GLOBAL_LINK = "https://forms.google.com/3XQCVsQdPNvvZDW79";
+        const REG_LINK = "https://forms.gle/3XQCVsQdPNvvZDW79";
 
-        // 從海報圖片中提取的活動資料
+        // 顏色分類邏輯：客廳=bg-at-center, 外出=bg-outside, 親子=bg-family
         const activities = [
-            // 圖一活動
-            { date: '2026-03-25', title: '中大學生同你傾 - 選科', time: '4:00 - 6:30 PM', loc: '客廳', target: '高小-初中生(初中優先)', desc: '想了解大學選科心得？中大學生親身分享經驗！', cat: '中大學生同你玩', color: 'bg-accent-teal' },
-            { date: '2026-03-27', title: '一齊煲湯・整麻糬', time: '3:15 - 5:30 PM', loc: '客廳', target: '所有街坊', desc: '街坊大聚會，一齊分享滋味湯水同好味麻糬！', cat: '中大學生同你玩', color: 'bg-accent-pink' },
-            { date: '2026-03-28', title: '學生帶你中大一日遊', time: '10:15 AM - 3:45 PM', loc: '中大*', target: '高小-初中生及其家庭', desc: '衝出觀塘！由大學生帶領參觀中大校園環境。', cat: '中大學生同你玩', color: 'bg-accent-yellow' },
-            { date: '2026-04-01', title: '一齊去貓Cafe！', time: '3:00 - 5:30 PM', loc: '觀塘*', target: '所有街坊', desc: '放鬆心情，同貓貓一齊玩轉下午。', cat: '中大學生同你玩', color: 'bg-accent-orange' },
-            { date: '2026-04-01', title: '中大學生同你傾 - 學習支援', time: '4:00 - 7:00 PM', loc: '客廳', target: '高小-高中生及其家庭', desc: '功課、學業遇到樽頸？哥哥姐姐幫緊你！', cat: '中大學生同你玩', color: 'bg-accent-teal' },
-            { date: '2026-04-01', title: '觀塘行沈雲山', time: '3:15 - 5:15 PM', loc: '沈雲山*', target: '所有街坊', desc: '大家一齊郁下，欣賞觀塘景色。', cat: '中大學生同你玩', color: 'bg-accent-teal' },
+            // 三月活動
+            { date: '2026-03-25', title: '中大學生同你傾 - 選科', time: '4:00 - 6:30 PM', loc: '客廳', target: '高小-初中生(初中優先)', desc: '想了解大學選科心得？中大學生親身分享經驗！', type: 'at-center' },
+            { date: '2026-03-27', title: '一齊煲湯・整麻糬', time: '3:15 - 5:30 PM', loc: '客廳', target: '所有街坊', desc: '街坊大聚會，一齊分享滋味湯水同好味麻糬！', type: 'at-center' },
+            { date: '2026-03-28', title: '學生帶你中大一日遊', time: '10:15 AM - 3:45 PM', loc: '中大*', target: '高小-初中生及其家庭', desc: '衝出觀塘！由大學生帶領參觀中大校園環境。', type: 'outside' },
             
-            // 圖二活動
-            { date: '2026-04-08', title: '行山食糖水', time: '2:30 - 6:30 PM', loc: '顯徑*', target: '所有街坊', desc: '遠足運動後一齊食番碗甜滋滋嘅糖水。', cat: '中大學生同你玩', color: 'bg-accent-teal' },
-            { date: '2026-04-11', title: 'M+野餐', time: '3:30 - 7:00 PM', loc: 'M+(西九)', target: '所有街坊', desc: '草地野餐大派對！每人準備一份食物分享。', cat: '中大學生同你玩', color: 'bg-accent-pink' },
+            // 四月活動
+            { date: '2026-04-01', title: '一齊去貓Cafe！', time: '3:00 - 5:30 PM', loc: '觀塘*', target: '所有街坊', desc: '放鬆心情，同貓貓一齊玩轉下午。', type: 'outside' },
+            { date: '2026-04-01', title: '學生同你傾-學習支援', time: '4:00 - 7:00 PM', loc: '客廳', target: '高小-高中生及其家庭', desc: '功課、學業遇到樽頸？哥哥姐姐幫緊你！', type: 'at-center' },
+            { date: '2026-04-01', title: '觀塘行沈雲山', time: '3:15 - 5:15 PM', loc: '沈雲山*', target: '所有街坊', desc: '大家一齊郁下，欣賞觀塘景色。', type: 'outside' },
+            { date: '2026-04-08', title: '行山食糖水', time: '2:30 - 6:30 PM', loc: '顯徑*', target: '所有街坊', desc: '遠足運動後一齊食番碗甜滋滋嘅糖水。', type: 'outside' },
+            { date: '2026-04-11', title: 'M+野餐', time: '3:30 - 7:00 PM', loc: 'M+(西九)', target: '所有街坊', desc: '草地野餐大派對！每人準備一份食物分享。', type: 'outside' },
             
-            // 親子節數活動 (跨日)
-            { date: '2026-04-08', title: '親子/祖孫一齊玩(1)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立良好親子關係。*需出席所有節數', cat: '中大學生同你玩', color: 'bg-accent-yellow' },
-            { date: '2026-04-09', title: '親子/祖孫一齊玩(2)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立良好親子關係。*需出席所有節數', cat: '中大學生同你玩', color: 'bg-accent-yellow' },
-            { date: '2026-04-10', title: '親子/祖孫一齊玩(3)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立良好親子關係。*需出席所有節數', cat: '中大學生同你玩', color: 'bg-accent-yellow' }
+            // 親子節數活動
+            { date: '2026-04-08', title: '親子/祖孫一齊玩(1)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立良好親子關係。*需出席所有節數', type: 'family' },
+            { date: '2026-04-09', title: '親子/祖孫一齊玩(2)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立良好親子關係。*需出席所有節數', type: 'family' },
+            { date: '2026-04-10', title: '親子/祖孫一齊玩(3)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立良好親子關係。*需出席所有節數', type: 'family' }
         ];
 
-        let currentMonth = 2; // 預設顯示 3 月
+        let currentMonth = 2; // 3月
 
         function renderCalendar(monthIdx) {
             currentMonth = monthIdx;
@@ -185,15 +190,14 @@
             const container = document.getElementById('calendarDays');
             container.innerHTML = '';
 
-            // 更新按鈕樣式
             const btnMar = document.getElementById('btnMar');
             const btnApr = document.getElementById('btnApr');
             if(monthIdx === 2) {
-                btnMar.className = "flex-1 py-3 text-lg font-bold rounded-l-2xl border-2 border-primary bg-primary text-white shadow-inner";
-                btnApr.className = "flex-1 py-3 text-lg font-bold rounded-r-2xl border-2 border-l-0 border-primary text-primary bg-white";
+                btnMar.className = "flex-1 py-4 text-xl font-bold rounded-2xl border-2 border-primary bg-primary text-white shadow-xl";
+                btnApr.className = "flex-1 py-4 text-xl font-bold rounded-2xl border-2 border-primary text-primary bg-white";
             } else {
-                btnMar.className = "flex-1 py-3 text-lg font-bold rounded-l-2xl border-2 border-primary text-primary bg-white";
-                btnApr.className = "flex-1 py-3 text-lg font-bold rounded-r-2xl border-2 border-l-0 border-primary bg-primary text-white shadow-inner";
+                btnMar.className = "flex-1 py-4 text-xl font-bold rounded-2xl border-2 border-primary text-primary bg-white";
+                btnApr.className = "flex-1 py-4 text-xl font-bold rounded-2xl border-2 border-primary bg-primary text-white shadow-xl";
             }
 
             const firstDay = new Date(year, monthIdx, 1).getDay();
@@ -201,7 +205,7 @@
 
             for(let i=0; i<firstDay; i++) {
                 const empty = document.createElement('div');
-                empty.className = 'day-cell bg-slate-50/50';
+                empty.className = 'day-cell bg-slate-50/50 cursor-default';
                 container.appendChild(empty);
             }
 
@@ -209,22 +213,20 @@
                 const dateStr = `${year}-${String(monthIdx + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const cell = document.createElement('div');
                 cell.className = 'day-cell';
-                cell.innerHTML = `<span class="text-sm font-bold text-slate-400">${d}</span>`;
+                cell.innerHTML = `<span class="text-base font-black text-slate-300">${d}</span>`;
                 
                 const dayEvts = activities.filter(a => a.date === dateStr);
                 if(dayEvts.length > 0) {
                     dayEvts.forEach(evt => {
                         const label = document.createElement('div');
-                        label.className = `event-label ${evt.color} text-slate-800`;
+                        label.className = `event-label bg-${evt.type}`;
                         label.innerText = evt.title;
                         cell.appendChild(label);
                     });
-                    // 整格日期可點擊
                     cell.onclick = () => openModal(dayEvts[0]);
                 } else {
                     cell.classList.add('cursor-default');
                 }
-                
                 container.appendChild(cell);
             }
         }
@@ -238,11 +240,20 @@
             document.getElementById('modalLoc').innerText = evt.loc;
             document.getElementById('modalTarget').innerText = evt.target;
             document.getElementById('modalDesc').innerText = evt.desc;
-            document.getElementById('modalCategory').innerText = evt.cat;
-            document.getElementById('modalLink').href = GLOBAL_LINK;
             
-            // 頂部顏色條隨活動分類變化
-            document.getElementById('modalHeaderColor').className = `h-4 w-full ${evt.color}`;
+            const header = document.getElementById('modalHeaderColor');
+            const catLabel = document.getElementById('modalCategoryLabel');
+            
+            if(evt.type === 'at-center') {
+                header.className = 'h-6 w-full bg-at-center';
+                catLabel.innerText = '客廳舉行';
+            } else if(evt.type === 'outside') {
+                header.className = 'h-6 w-full bg-outside';
+                catLabel.innerText = '外出活動';
+            } else {
+                header.className = 'h-6 w-full bg-family';
+                catLabel.innerText = '親子/祖孫';
+            }
 
             document.getElementById('eventModal').classList.replace('hidden', 'flex');
         }
@@ -251,7 +262,6 @@
             document.getElementById('eventModal').classList.replace('flex', 'hidden');
         }
 
-        // 點擊外面關閉
         window.onclick = function(e) {
             if(e.target == document.getElementById('eventModal')) closeModal();
         }
