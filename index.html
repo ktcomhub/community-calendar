@@ -16,10 +16,15 @@
         .color-primary { color: #2d4a53; }
         .bg-primary { background-color: #2d4a53; }
         
-        /* 活動類別顏色 */
-        .bg-at-center { background-color: #2d4a53; color: white; } /* 客廳舉行 - 深青色 */
-        .bg-outside { background-color: #f19149; color: white; }   /* 外出活動 - 橙色 */
-        .bg-family { background-color: #e98b8b; color: white; }    /* 親子/祖孫 - 粉色 */
+        /* 活動類別顏色 - 增加點擊態 */
+        .bg-at-center { background-color: #2d4a53; color: white; }
+        .bg-at-center:active { background-color: #1a2d33; }
+        
+        .bg-outside { background-color: #f19149; color: white; }
+        .bg-outside:active { background-color: #d67a35; }
+        
+        .bg-family { background-color: #e98b8b; color: white; }
+        .bg-family:active { background-color: #d16f6f; }
 
         .calendar-grid { 
             display: grid; 
@@ -29,39 +34,53 @@
             border: 1px solid #e2e8f0;
         }
         .day-cell { 
-            min-height: 120px; 
+            min-height: 125px; 
             background: white; 
-            padding: 8px;
-            cursor: pointer;
+            padding: 4px;
             display: flex;
             flex-direction: column;
-            transition: background 0.2s;
         }
-        .day-cell:hover { background: #f0f7f9; }
         
         @media (max-width: 640px) {
-            .day-cell { min-height: 95px; padding: 4px; }
-            .event-label { font-size: 10px; line-height: 1.2; padding: 4px 2px; }
+            .day-cell { min-height: 110px; padding: 2px; }
+            .event-label { font-size: 11px; line-height: 1.2; padding: 6px 3px; }
         }
 
         .event-label {
-            margin-top: 4px;
-            padding: 5px 6px;
-            border-radius: 6px;
+            margin-top: 3px;
+            padding: 6px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 11px;
+            font-size: 12px;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: transform 0.1s;
+        }
+        .event-label:active {
+            transform: scale(0.95);
         }
 
-        /* 報名按鈕動畫 */
         .btn-pulse {
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+            50% { transform: scale(1.03); }
             100% { transform: scale(1); }
+        }
+        
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
     </style>
 </head>
@@ -71,7 +90,7 @@
     <div class="bg-primary text-white p-6 shadow-lg mb-4 text-center">
         <div class="max-w-4xl mx-auto">
             <h1 class="text-2xl md:text-3xl font-bold tracking-tight">賽馬會「聚首壹塘」社區客廳</h1>
-            <div class="mt-2 inline-block px-4 py-1 bg-white/20 rounded-full text-sm">3月及4月活動報名</div>
+            <div class="mt-2 inline-block px-4 py-1 bg-white/20 rounded-full text-sm">3月及4月活動報名門戶</div>
         </div>
     </div>
 
@@ -83,9 +102,9 @@
 
     <!-- 圖例說明 -->
     <div class="max-w-4xl mx-auto px-4 mb-6 flex flex-wrap justify-center gap-4 text-sm font-bold">
-        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-at-center"></span> 客廳舉行</div>
-        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-outside"></span> 外出活動</div>
-        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-family"></span> 親子/祖孫</div>
+        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-at-center shadow-sm"></span> 客廳舉行</div>
+        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-outside shadow-sm"></span> 外出活動</div>
+        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-family shadow-sm"></span> 親子/祖孫</div>
     </div>
 
     <!-- 星期顯示 -->
@@ -102,9 +121,13 @@
         <div id="calendarDays" class="calendar-grid rounded-b-2xl overflow-hidden shadow-xl border-t-0"></div>
     </div>
 
+    <div class="max-w-4xl mx-auto mt-8 px-6 text-slate-400 text-sm text-center">
+        💡 溫馨提示：請直接點擊想參加的活動名稱
+    </div>
+
     <!-- 活動詳情彈窗 -->
     <div id="eventModal" class="fixed inset-0 bg-black/75 hidden items-end md:items-center justify-center z-50 p-0 md:p-4 backdrop-blur-md">
-        <div class="bg-white w-full max-w-lg rounded-t-3xl md:rounded-3xl overflow-hidden shadow-2xl">
+        <div class="bg-white w-full max-w-lg rounded-t-3xl md:rounded-3xl overflow-hidden shadow-2xl animate-slide-up">
             <div id="modalHeaderColor" class="h-6 w-full"></div>
             
             <div class="p-8">
@@ -113,7 +136,7 @@
                         <span id="modalCategoryLabel" class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase">活動類別</span>
                         <h2 id="modalTitle" class="text-2xl font-bold mt-2 color-primary leading-tight"></h2>
                     </div>
-                    <button onclick="closeModal()" class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center text-3xl text-slate-400">&times;</button>
+                    <button onclick="closeModal()" class="bg-slate-100 w-12 h-12 rounded-full flex items-center justify-center text-3xl text-slate-400 active:bg-slate-200">&times;</button>
                 </div>
 
                 <div class="space-y-5 text-lg">
@@ -162,7 +185,6 @@
     <script>
         const REG_LINK = "https://forms.gle/3XQCVsQdPNvvZDW79";
 
-        // 顏色分類邏輯：客廳=bg-at-center, 外出=bg-outside, 親子=bg-family
         const activities = [
             // 三月活動
             { date: '2026-03-25', title: '中大學生同你傾 - 選科', time: '4:00 - 6:30 PM', loc: '客廳', target: '高小-初中生(初中優先)', desc: '想了解大學選科心得？中大學生親身分享經驗！', type: 'at-center' },
@@ -205,7 +227,7 @@
 
             for(let i=0; i<firstDay; i++) {
                 const empty = document.createElement('div');
-                empty.className = 'day-cell bg-slate-50/50 cursor-default';
+                empty.className = 'day-cell bg-slate-50/50';
                 container.appendChild(empty);
             }
 
@@ -213,20 +235,20 @@
                 const dateStr = `${year}-${String(monthIdx + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const cell = document.createElement('div');
                 cell.className = 'day-cell';
-                cell.innerHTML = `<span class="text-base font-black text-slate-300">${d}</span>`;
+                cell.innerHTML = `<span class="text-sm font-black text-slate-300 ml-1 mt-1">${d}</span>`;
                 
                 const dayEvts = activities.filter(a => a.date === dateStr);
-                if(dayEvts.length > 0) {
-                    dayEvts.forEach(evt => {
-                        const label = document.createElement('div');
-                        label.className = `event-label bg-${evt.type}`;
-                        label.innerText = evt.title;
-                        cell.appendChild(label);
-                    });
-                    cell.onclick = () => openModal(dayEvts[0]);
-                } else {
-                    cell.classList.add('cursor-default');
-                }
+                dayEvts.forEach(evt => {
+                    const label = document.createElement('div');
+                    label.className = `event-label bg-${evt.type}`;
+                    label.innerText = evt.title;
+                    // 將點擊事件直接綁定在標籤按鈕上
+                    label.onclick = (e) => {
+                        e.stopPropagation(); // 防止觸發到格子底層的其他事件
+                        openModal(evt);
+                    };
+                    cell.appendChild(label);
+                });
                 container.appendChild(cell);
             }
         }
