@@ -117,6 +117,7 @@
         <div id="calendarDays" class="calendar-grid rounded-b-3xl overflow-hidden shadow-2xl"></div>
     </div>
 
+    <!-- 活動詳情 Modal -->
     <div id="eventModal" class="fixed inset-0 bg-black/80 hidden items-end md:items-center justify-center z-50 p-0 md:p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-xl rounded-t-[40px] md:rounded-[40px] overflow-hidden shadow-2xl animate-slide-up">
             <div id="modalHeaderColor" class="h-8 w-full"></div>
@@ -147,7 +148,7 @@
                         <span class="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-purple-100 rounded-2xl text-3xl">👤</span>
                         <div><p class="text-sm text-slate-400 font-black">對象</p><p id="modalTarget" class="text-xl font-black text-slate-800"></p></div>
                     </div>
-                    <div class="bg-slate-100 p-6 rounded-3xl border-2 border-slate-200">
+                    <div id="descBox" class="bg-slate-100 p-6 rounded-3xl border-2 border-slate-200">
                         <p id="modalDesc" class="text-slate-700 text-xl font-medium leading-relaxed whitespace-pre-line"></p>
                     </div>
                 </div>
@@ -160,6 +161,7 @@
 
     <script>
         const REG_LINK_GENERAL = "https://forms.gle/3XQCVsQdPNvvZDW79";
+        const SOUP_DESC = "(「湯開心霏」煲湯組為大家煲時令靚湯✨)";
 
         const activities = [
             // 3月 限定活動
@@ -168,7 +170,7 @@
             { date: '2026-03-25', title: '選科分享', time: '4:00 - 6:30 PM', loc: '客廳', target: '高小-初中生', desc: '中大學生分享選科心得！', type: 'at-center', reg: 'link', customLink: REG_LINK_GENERAL },
             { date: '2026-03-27', title: '一齊煲湯', time: '3:15 - 5:30 PM', loc: '客廳', target: '所有街坊', desc: '分享時令靚湯同麻糬！', type: 'at-center', reg: 'link', customLink: REG_LINK_GENERAL },
             { date: '2026-03-28', title: '中大一日遊', time: '10:15 AM - 3:45 PM', loc: '中大校園', target: '小四至初中生及其家庭', desc: '參觀大學校園環境。', type: 'outside', reg: 'link', customLink: REG_LINK_GENERAL },
-            { date: '2026-03-29', title: '行山團：九逕山', time: '8:30 AM - 3:30 PM', loc: '屯門九逕山', target: '6歲或以上街坊', desc: '路線：屯門九逕山一帶，途經藍地水塘及彩虹欄杆，拍照打卡一流！\n\n注意事項：\n1. 上午 8:30 於社區客廳集合。\n2. 需自備充足食水、防曬用品及穿著合適運動服。', type: 'outside', reg: 'link', customLink: 'https://forms.gle/P3MfBsunFMnb7B138' },
+            { date: '2026-03-29', title: '行山團：九逕山', time: '8:30 AM - 3:30 PM', loc: '屯門九逕山', target: '6歲或以上街坊', desc: '路線：屯門九逕山一帶，途經藍地水塘及彩虹欄杆，拍照打卡一流！\n\n注意事項：\n1. 上午 8:30 於社區客廳集合及出發。\n2. 需自備充足食水、防曬用品及穿著合適運動服。', type: 'outside', reg: 'link', customLink: 'https://forms.gle/P3MfBsunFMnb7B138' },
             
             // 4月 限定活動
             { date: '2026-04-01', title: '零食挑戰工作坊', time: '10:00 AM - 12:00 NN', loc: '社區客廳', target: '6-12 歲小學生', desc: '專業營養師用遊戲方式帶小朋友認識健康零食！', type: 'at-center', reg: 'link', customLink: 'https://forms.gle/d4TwLgP4bjgcxuCs5' },
@@ -183,12 +185,12 @@
 
             // 恆常活動
             { date: '2026-03-27', title: '月會', time: '8:00 - 9:30 PM', loc: '客廳', target: '所有會員', desc: '介紹下月活動，一齊討論客廳運作。小朋友可以睇卡通！', type: 'regular', reg: 'whatsapp' },
-            { date: '2026-03-24', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' },
-            { date: '2026-04-14', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' },
-            { date: '2026-04-28', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' }
+            { date: '2026-03-24', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: SOUP_DESC, type: 'regular', reg: 'none' },
+            { date: '2026-04-14', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: SOUP_DESC, type: 'regular', reg: 'none' },
+            { date: '2026-04-28', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: SOUP_DESC, type: 'regular', reg: 'none' }
         ];
 
-        // 星期四影院
+        // 星期四影院 (自動生成)
         for(let m=2; m<=3; m++) {
             for(let d=1; d<=31; d++) {
                 const date = new Date(2026, m, d);
@@ -199,7 +201,7 @@
                         time: '晚上',
                         loc: '客廳',
                         target: '所有會員',
-                        desc: '大家一齊坐低睇電影！',
+                        desc: '', 
                         type: 'regular',
                         reg: 'none'
                     });
@@ -250,7 +252,14 @@
             document.getElementById('modalTime').innerText = evt.time;
             document.getElementById('modalLoc').innerText = evt.loc;
             document.getElementById('modalTarget').innerText = evt.target;
-            document.getElementById('modalDesc').innerText = evt.desc;
+            
+            const descBox = document.getElementById('descBox');
+            if(evt.desc && evt.desc.trim() !== "") {
+                descBox.style.display = 'block';
+                document.getElementById('modalDesc').innerText = evt.desc;
+            } else {
+                descBox.style.display = 'none';
+            }
             
             const header = document.getElementById('modalHeaderColor');
             const catLabel = document.getElementById('modalCategoryLabel');
