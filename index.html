@@ -39,7 +39,7 @@
         
         @media (max-width: 640px) {
             .day-cell { min-height: 130px; padding: 4px; }
-            .event-label { font-size: 14px !important; padding: 10px 4px !important; }
+            .event-label { font-size: 14px !important; padding: 8px 4px !important; }
             .day-number { font-size: 18px !important; }
         }
 
@@ -161,7 +161,6 @@
 
     <script>
         const REG_LINK_GENERAL = "https://forms.gle/3XQCVsQdPNvvZDW79";
-        // 統一飲湯活動簡介
         const SOUP_DESC = "「湯開心霏」煲湯組為大家煲時令靚湯✨";
 
         const activities = [
@@ -191,13 +190,17 @@
             { date: '2026-04-28', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: SOUP_DESC, type: 'regular', reg: 'none' }
         ];
 
-        // 星期四影院 (自動生成)
-        for(let m=2; m<=3; m++) {
-            for(let d=1; d<=31; d++) {
+        // 循環生成逢星期四的影院和逢星期五的健身研習社
+        for(let m=2; m<=3; m++) { // 3月(2)和4月(3)
+            const daysInMonth = new Date(2026, m + 1, 0).getDate();
+            for(let d=1; d<=daysInMonth; d++) {
                 const date = new Date(2026, m, d);
-                if(date.getMonth() === m && date.getDay() === 4) {
+                const dateStr = `2026-0${m+1}-${String(d).padStart(2,'0')}`;
+                
+                // 逢星期四影院
+                if(date.getDay() === 4) {
                     activities.push({
-                        date: `2026-0${m+1}-${String(d).padStart(2,'0')}`,
+                        date: dateStr,
                         title: '星期四影院',
                         time: '晚上',
                         loc: '客廳',
@@ -205,6 +208,22 @@
                         desc: '', 
                         type: 'regular',
                         reg: 'none'
+                    });
+                }
+                
+                // 逢星期五健身研習社
+                if(date.getDay() === 5) {
+                    activities.push({
+                        date: dateStr,
+                        title: '健身研習社',
+                        time: '9:00 - 10:30 AM',
+                        loc: '社區客廳',
+                        target: '18 歲以上街坊',
+                        desc: '由健身教練帶領，一齊進行肌肉鍛鍊。',
+                        type: 'regular',
+                        reg: 'link',
+                        customLink: 'https://wa.me/85297208622?text=%E4%BD%A0%E5%A5%BD%EF%BC%8C%E6%88%91%E6%83%B3%E5%8F%83%E5%8A%A0%E5%81%A5%E8%BA%AB%E7%A0%94%E7%BF%92%E7%A4%BE',
+                        regText: 'WhatsApp 查詢'
                     });
                 }
             }
@@ -284,9 +303,11 @@
                     </div>
                 `;
             } else {
+                const btnLabel = evt.regText || '按此報名';
+                const btnColor = btnLabel.includes('WhatsApp') ? 'bg-[#25d366]' : 'bg-[#f19149]';
                 actionContainer.innerHTML = `
-                    <a href="${evt.customLink}" target="_blank" class="btn-action block w-full py-6 bg-[#f19149] text-white text-center text-3xl font-black rounded-[30px] transition-all active:scale-95">
-                        按此報名
+                    <a href="${evt.customLink}" target="_blank" class="btn-action block w-full py-6 ${btnColor} text-white text-center text-3xl font-black rounded-[30px] transition-all active:scale-95">
+                        ${btnLabel}
                     </a>
                 `;
             }
