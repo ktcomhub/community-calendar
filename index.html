@@ -35,6 +35,24 @@
             padding: 6px;
             display: flex;
             flex-direction: column;
+            position: relative;
+        }
+
+        /* 今日日期樣式 */
+        .today-cell {
+            background-color: #fffaf0;
+            outline: 4px solid #f97316;
+            outline-offset: -4px;
+            z-index: 10;
+        }
+        .today-badge {
+            background-color: #f97316;
+            color: white;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 4px;
+            margin-left: 4px;
+            vertical-align: middle;
         }
         
         @media (max-width: 640px) {
@@ -163,6 +181,10 @@
         const REG_LINK_GENERAL = "https://forms.gle/3XQCVsQdPNvvZDW79";
         const SOUP_DESC = "「湯開心霏」煲湯組為大家煲時令靚湯✨";
 
+        // 取得今日日期字串 (YYYY-MM-DD)
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
         const activities = [
             // 3月 限定活動
             { date: '2026-03-19', title: '遊戲攤位', time: '4:30 - 6:00 PM', loc: '社區客廳', target: '所有街坊', desc: '在遊戲中學習歷史物理知識，完成後有小禮物喔！', type: 'at-center', reg: 'none' },
@@ -250,8 +272,17 @@
             for(let d=1; d<=daysInMonth; d++) {
                 const dateStr = `2026-0${monthIdx + 1}-${String(d).padStart(2, '0')}`;
                 const cell = document.createElement('div');
-                cell.className = 'day-cell';
-                cell.innerHTML = `<span class="day-number">${d}</span>`;
+                
+                // 判斷是否為今日
+                const isToday = (dateStr === todayStr);
+                cell.className = `day-cell ${isToday ? 'today-cell' : ''}`;
+                
+                cell.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="day-number">${d}</span>
+                        ${isToday ? '<span class="today-badge font-black">今日</span>' : ''}
+                    </div>
+                `;
                 
                 const dayEvts = activities.filter(a => a.date === dateStr);
                 dayEvts.forEach(evt => {
@@ -317,7 +348,16 @@
         function closeModal() { document.getElementById('eventModal').classList.replace('flex', 'hidden'); }
         function changeMonth(m) { renderCalendar(m); }
         window.onclick = (e) => { if(e.target == document.getElementById('eventModal')) closeModal(); };
-        window.onload = () => renderCalendar(2);
+        
+        window.onload = () => {
+            // 初始化時根據當前月份自動切換（如果是 4 月則顯示 4 月）
+            const currentMonthIdx = today.getMonth(); // 0-11
+            if (currentMonthIdx === 3) {
+                renderCalendar(3);
+            } else {
+                renderCalendar(2);
+            }
+        };
     </script>
 </body>
 </html>
