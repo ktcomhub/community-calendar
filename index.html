@@ -20,7 +20,7 @@
         .bg-at-center { background-color: #2d4a53; color: white; border: 1px solid #1a2d33; }
         .bg-outside { background-color: #e67e22; color: white; border: 1px solid #d35400; }
         .bg-family { background-color: #d63031; color: white; border: 1px solid #b22222; }
-        .bg-regular { background-color: #79c3ba; color: white; border: 1px solid #5da59c; } /* 恆常活動用綠色 */
+        .bg-regular { background-color: #79c3ba; color: white; border: 1px solid #5da59c; } 
 
         .calendar-grid { 
             display: grid; 
@@ -156,42 +156,45 @@
                     </div>
                 </div>
 
-                <div class="mt-8 mb-4">
-                    <a id="modalLink" href="#" target="_blank" class="btn-action block w-full py-6 text-white text-center text-3xl font-black rounded-[30px] transition-all active:scale-95">
-                        按此報名
-                    </a>
+                <div class="mt-8 mb-4" id="modalActionContainer">
+                    <!-- 按鈕將由 JavaScript 動態生成 -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const REG_LINK = "https://forms.gle/3XQCVsQdPNvvZDW79";
+        const REG_LINK_GENERAL = "https://forms.gle/3XQCVsQdPNvvZDW79";
 
         // 活動資料
         const activities = [
-            // 3月
-            { date: '2026-03-19', title: '遊戲攤位', time: '4:30 - 6:00 PM', loc: '客廳', target: '所有街坊', desc: '在遊戲中學習歷史物理知識，完成後有小禮物喔！', type: 'at-center', reg: 'none' },
-            { date: '2026-03-25', title: '選科分享', time: '4:00 - 6:30 PM', loc: '客廳', target: '高小-初中生', desc: '中大學生分享選科心得！', type: 'at-center', reg: 'form' },
-            { date: '2026-03-27', title: '月會', time: '8:00 - 9:30 PM', loc: '客廳', target: '所有會員', desc: '介紹下月活動，一齊討論客廳運作。小朋友可以睇卡通！', type: 'at-center', reg: 'whatsapp' },
-            { date: '2026-03-27', title: '一齊煲湯', time: '3:15 - 5:30 PM', loc: '客廳', target: '所有街坊', desc: '分享時令靚湯同麻糬！', type: 'at-center', reg: 'form' },
-            { date: '2026-03-28', title: '中大一日遊', time: '10:15 AM - 3:45 PM', loc: '中大校園', target: '小四至初中生及其家庭', desc: '參觀大學校園環境。', type: 'outside', reg: 'form' },
+            // 3月 限定活動
+            { date: '2026-03-19', title: '遊戲攤位', time: '4:30 - 6:00 PM', loc: '社區客廳', target: '所有街坊', desc: '在遊戲中學習歷史物理知識，完成後有小禮物喔！', type: 'at-center', reg: 'none' },
+            { date: '2026-03-19', title: '簡樸房查真啲', time: '8:00 - 9:30 PM', loc: '社區客廳', target: '所有街坊', desc: '簡樸房條例已經推出！想知多啲記得報名喇！', type: 'at-center', reg: 'link', customLink: 'https://forms.gle/wGqMHZnyirUC8hwX6' },
+            { date: '2026-03-25', title: '選科分享', time: '4:00 - 6:30 PM', loc: '客廳', target: '高小-初中生', desc: '中大學生分享選科心得！', type: 'at-center', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-03-27', title: '一齊煲湯', time: '3:15 - 5:30 PM', loc: '客廳', target: '所有街坊', desc: '分享時令靚湯同麻糬！', type: 'at-center', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-03-28', title: '中大一日遊', time: '10:15 AM - 3:45 PM', loc: '中大校園', target: '小四至初中生及其家庭', desc: '參觀大學校園環境。', type: 'outside', reg: 'link', customLink: REG_LINK_GENERAL },
             
-            // 4月
-            { date: '2026-04-01', title: '貓Cafe！', time: '3:00 - 5:30 PM', loc: '觀塘', target: '所有街坊', desc: '放鬆心情，同貓貓玩。', type: 'outside', reg: 'form' },
-            { date: '2026-04-01', title: '學習支援', time: '4:00 - 7:00 PM', loc: '客廳', target: '高小-高中生', desc: '功課遇難題？姐姐哥哥幫你！', type: 'at-center', reg: 'form' },
-            { date: '2026-04-01', title: '行沈雲山', time: '3:15 - 5:15 PM', loc: '沈雲山', target: '所有街坊', desc: '欣賞觀塘美景。', type: 'outside', reg: 'form' },
-            { date: '2026-04-08', title: '行山食糖水', time: '2:30 - 6:30 PM', loc: '顯徑', target: '所有街坊', desc: '遠足運動兼食糖水。', type: 'outside', reg: 'form' },
-            { date: '2026-04-08', title: '親子一齊玩(1)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立親密關係。', type: 'family', reg: 'form' },
-            { date: '2026-04-09', title: '親子一齊玩(2)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立親密關係。', type: 'family', reg: 'form' },
-            { date: '2026-04-10', title: '親子一齊玩(3)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立親密關係。', type: 'family', reg: 'form' },
-            { date: '2026-04-11', title: 'M+西九野餐', time: '3:30 - 7:00 PM', loc: 'M+文化區', target: '所有街坊', desc: '海邊草地大野餐。', type: 'outside', reg: 'form' },
-            { date: '2026-04-14', title: '飲湯啦喂😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' },
-            { date: '2026-04-28', title: '飲湯啦喂😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' }
+            // 4月 限定活動
+            { date: '2026-04-01', title: '零食挑戰工作坊', time: '10:00 AM - 12:00 NN', loc: '社區客廳', target: '6-12 歲小學生', desc: '專業營養師用遊戲方式帶小朋友認識健康零食！', type: 'at-center', reg: 'link', customLink: 'https://forms.gle/d4TwLgP4bjgcxuCs5' },
+            { date: '2026-04-01', title: '貓Cafe！', time: '3:00 - 5:30 PM', loc: '觀塘', target: '所有街坊', desc: '放鬆心情，同貓貓玩。', type: 'outside', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-04-01', title: '學習支援', time: '4:00 - 7:00 PM', loc: '客廳', target: '高小-高中生', desc: '功課遇難題？姐姐哥哥幫你！', type: 'at-center', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-04-01', title: '行沈雲山', time: '3:15 - 5:15 PM', loc: '沈雲山', target: '所有街坊', desc: '欣賞觀塘美景。', type: 'outside', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-04-08', title: '行山食糖水', time: '2:30 - 6:30 PM', loc: '顯徑', target: '所有街坊', desc: '遠足運動兼食糖水。', type: 'outside', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-04-08', title: '親子一齊玩(1)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立親密關係。', type: 'family', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-04-09', title: '親子一齊玩(2)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立親密關係。', type: 'family', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-04-10', title: '親子一齊玩(3)', time: '5:00 - 7:00 PM', loc: '客廳', target: '親子/祖孫', desc: '建立親密關係。', type: 'family', reg: 'link', customLink: REG_LINK_GENERAL },
+            { date: '2026-04-11', title: 'M+西九野餐', time: '3:30 - 7:00 PM', loc: 'M+文化區', target: '所有街坊', desc: '海邊草地大野餐。', type: 'outside', reg: 'link', customLink: REG_LINK_GENERAL },
+
+            // 恆常活動
+            { date: '2026-03-27', title: '月會', time: '8:00 - 9:30 PM', loc: '客廳', target: '所有會員', desc: '介紹下月活動，一齊討論客廳運作。小朋友可以睇卡通！', type: 'regular', reg: 'whatsapp' },
+            { date: '2026-03-24', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' },
+            { date: '2026-04-14', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' },
+            { date: '2026-04-28', title: '飲湯啦😜', time: '4:30 PM 後', loc: '客廳', target: '所有會員', desc: '「湯開心霏」煲滲組為大家煲時令靚湯✨', type: 'regular', reg: 'none' }
         ];
 
-        // 新增星期四影院
-        for(let m=2; m<=3; m++) { // 3月和4月
+        // 星期四影院 (恆常)
+        for(let m=2; m<=3; m++) {
             for(let d=1; d<=31; d++) {
                 const date = new Date(2026, m, d);
                 if(date.getMonth() === m && date.getDay() === 4) {
@@ -256,25 +259,32 @@
             
             const header = document.getElementById('modalHeaderColor');
             const catLabel = document.getElementById('modalCategoryLabel');
-            const actionBtn = document.getElementById('modalLink');
+            const actionContainer = document.getElementById('modalActionContainer');
             
             header.className = `h-8 w-full bg-${evt.type}`;
             const typeNames = { 'at-center': '客廳活動', 'outside': '外出活動', 'family': '親子活動', 'regular': '恆常活動' };
             catLabel.innerText = typeNames[evt.type];
 
-            // 處理報名按鈕
+            // 根據註冊類型生成按鈕
+            actionContainer.innerHTML = '';
             if(evt.reg === 'none') {
-                actionBtn.innerText = "不用報名，即時參加";
-                actionBtn.href = "javascript:void(0)";
-                actionBtn.style.backgroundColor = "#94a3b8"; // 灰色
+                actionContainer.innerHTML = `
+                    <div class="btn-action w-full py-6 bg-slate-400 text-white text-center text-3xl font-black rounded-[30px]">
+                        不用報名，即時參加
+                    </div>
+                `;
             } else if(evt.reg === 'whatsapp') {
-                actionBtn.innerText = "請查看 WhatsApp 訊息";
-                actionBtn.href = "javascript:void(0)";
-                actionBtn.style.backgroundColor = "#25d366"; // WhatsApp 綠色
+                actionContainer.innerHTML = `
+                    <div class="btn-action w-full py-6 bg-[#25d366] text-white text-center text-3xl font-black rounded-[30px]">
+                        請查看 WhatsApp 群組
+                    </div>
+                `;
             } else {
-                actionBtn.innerText = "按此報名";
-                actionBtn.href = REG_LINK;
-                actionBtn.style.backgroundColor = "#f19149"; // 橙色
+                actionContainer.innerHTML = `
+                    <a href="${evt.customLink}" target="_blank" class="btn-action block w-full py-6 bg-[#f19149] text-white text-center text-3xl font-black rounded-[30px] transition-all active:scale-95">
+                        按此報名
+                    </a>
+                `;
             }
 
             document.getElementById('eventModal').classList.replace('hidden', 'flex');
